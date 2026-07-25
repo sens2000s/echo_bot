@@ -63,7 +63,7 @@ def handle_message(event):
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
         # Confirm Template
-        if text == 'Confirm':
+        if text == '原新農業合作社介紹':
             confirm_template = ConfirmTemplate(
                 text='今天學程式了嗎?',
                 actions=[
@@ -82,7 +82,7 @@ def handle_message(event):
                 )
             )
         # Buttons Template
-        elif text == 'Buttons':
+        elif text == '療癒遊程介紹':
             url = request.url_root + 'static/Logo.jpg'
             url = url.replace("http:", "https:")
             app.logger.info("url=" + url)
@@ -111,7 +111,7 @@ def handle_message(event):
                 )
             )
         # Carousel Template
-        elif text == 'Carousel':
+        elif text == '療癒商品':
             url = request.url_root + 'static/Logo.jpg'
             url = url.replace("http:", "https:")
             app.logger.info("url=" + url)
@@ -179,7 +179,7 @@ def handle_message(event):
             )
 
             image_carousel_message = TemplateMessage(
-                alt_text='圖片輪播範本',
+                alt_text='其他商品',
                 template=image_carousel_template
             )
 
