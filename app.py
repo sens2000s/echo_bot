@@ -84,7 +84,7 @@ def handle_message(event):
         # Buttons Template
         elif text == 'Buttons':
             url = request.url_root + 'static/Logo.jpg'
-            url = url.replace("http", "https")
+            url = url.replace("http:", "https:")
             app.logger.info("url=" + url)
             buttons_template = ButtonsTemplate(
                 thumbnail_image_url=url,
@@ -113,7 +113,7 @@ def handle_message(event):
         # Carousel Template
         elif text == 'Carousel':
             url = request.url_root + 'static/Logo.jpg'
-            url = url.replace("http", "https")
+            url = url.replace("http:", "https:")
             app.logger.info("url=" + url)
             carousel_template = CarouselTemplate(
                 columns=[
