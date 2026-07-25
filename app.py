@@ -156,19 +156,19 @@ def handle_message(event):
         # ImageCarousel Template
         elif text == '療癒問卷':
             url = request.url_root + 'static/'
-            url = url.replace("http", "https")
+            #url = url.replace("http", "https")
             app.logger.info("url=" + url)
             image_carousel_template = ImageCarouselTemplate(
                 columns=[
                     ImageCarouselColumn(
-                        image_url=url+'pressure_before01.jpg',
+                        image_url='https://echo-bot-peach-alpha.vercel.app/static/pressure_before01.jpg',
                         action=URIAction(
                             label='填 寫 問 卷',
                             uri='https://www.yahoo.com.tw/'
                         )
                     ),
                     ImageCarouselColumn(
-                        image_url=url+'pressure_after01.jpg',
+                        image_url='https://echo-bot-peach-alpha.vercel.app/static/pressure_after01.jpg',
                         action=URIAction(
                             label='填 寫 問 卷',
                             uri='https://www.hinet.net/'
