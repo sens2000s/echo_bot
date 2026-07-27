@@ -83,12 +83,12 @@ def handle_message(event):
             )
         # Buttons Template
         elif text == '療癒遊程介紹':
-            url = request.url_root + 'static/Logo.jpg'
+            url = request.url_root + 'static/solo01.jpg'
             url = url.replace("http:", "https:")
             app.logger.info("url=" + url)
             buttons_template = ButtonsTemplate(
                 thumbnail_image_url=url,
-                title='LineBot功能測試',
+                title='遊程LineBot功能測試',
                 text='說明',
                 actions=[
                     # URIAction(label='連結', uri='https://www.facebook.com/NTUEBIGDATAEDU'),
