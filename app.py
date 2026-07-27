@@ -65,7 +65,7 @@ def handle_message(event):
         # Confirm Template
         if text == '原新農業合作社介紹':
             confirm_template = ConfirmTemplate(
-                text='今天學程式了嗎?',
+                text='要了解原新農業合作社推薦遊程嗎?',
                 actions=[
                     MessageAction(label='是', text='是!'),
                     MessageAction(label='否', text='否!')
@@ -88,8 +88,8 @@ def handle_message(event):
             app.logger.info("url=" + url)
             buttons_template = ButtonsTemplate(
                 thumbnail_image_url=url,
-                title='示範',
-                text='詳細說明',
+                title='LineBot功能測試',
+                text='說明',
                 actions=[
                     # URIAction(label='連結', uri='https://www.facebook.com/NTUEBIGDATAEDU'),
                     # PostbackAction(label='回傳值', data='ping', displayText='傳了'),
@@ -112,15 +112,15 @@ def handle_message(event):
             )
         # Carousel Template
         elif text == '療癒商品':
-            url = request.url_root + 'static/Logo.jpg'
+            url = request.url_root + 'static/prod_s01.jpg'
             url = url.replace("http:", "https:")
             app.logger.info("url=" + url)
             carousel_template = CarouselTemplate(
                 columns=[
                     CarouselColumn(
                         thumbnail_image_url=url,
-                        title='第一項',
-                        text='這是第一項的描述',
+                        title='山蘇馬告防蚊液',
+                        text='這是第一項商品',
                         actions=[
                             URIAction(
                                 label='按我前往 Google',
@@ -130,8 +130,8 @@ def handle_message(event):
                     ),
                     CarouselColumn(
                         thumbnail_image_url=url,
-                        title='第二項',
-                        text='這是第二項的描述',
+                        title='山蘇手工皂',
+                        text='這是第二項的商品',
                         actions=[
                             URIAction(
                                 label='按我前往 Yahoo',
