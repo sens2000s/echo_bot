@@ -63,9 +63,9 @@ def handle_message(event):
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
         # Confirm Template
-        if text == '原新農業合作社介紹':
+        if text == '有限責任花蓮縣原新農業合作社介紹':
             confirm_template = ConfirmTemplate(
-                text='今天學程式了嗎?',
+                text='是否參訪',
                 actions=[
                     MessageAction(label='是', text='是!'),
                     MessageAction(label='否', text='否!')
@@ -88,10 +88,10 @@ def handle_message(event):
             app.logger.info("url=" + url)
             buttons_template = ButtonsTemplate(
                 thumbnail_image_url=url,
-                title='示範',
-                text='詳細說明',
+                title='療癒遊程介紹',
+                text='導向官網說明',
                 actions=[
-                    # URIAction(label='連結', uri='https://www.facebook.com/NTUEBIGDATAEDU'),
+                    # URIAction(label='連結', uri='https://0401mgiril.com/about-us/'),
                     # PostbackAction(label='回傳值', data='ping', displayText='傳了'),
                     # MessageAction(label='傳"哈囉"', text='哈囉'),
                     # DatetimePickerAction(label="選擇時間", data="時間", mode="datetime"),
