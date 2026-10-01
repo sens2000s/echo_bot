@@ -112,7 +112,7 @@ def handle_message(event):
             )
         # Carousel Template
         elif text == '療癒商品':
-            url = request.url_root + 'static/Logo.jpg'
+            url = request.url_root + 'static/mlogo.jpg'
             url = url.replace("http:", "https:")
             app.logger.info("url=" + url)
             carousel_template = CarouselTemplate(
