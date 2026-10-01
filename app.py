@@ -63,7 +63,7 @@ def handle_message(event):
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
         # Confirm Template
-        if text == '有限責任花蓮縣原新農業合作社介紹':
+        if text == '原新農業合作社介紹':
             confirm_template = ConfirmTemplate(
                 text='是否參訪',
                 actions=[
@@ -83,7 +83,7 @@ def handle_message(event):
             )
         # Buttons Template
         elif text == '療癒遊程介紹':
-            url = request.url_root + 'static/Logo.jpg'
+            url = request.url_root + 'static/mlogo.jpg'
             url = url.replace("http:", "https:")
             app.logger.info("url=" + url)
             buttons_template = ButtonsTemplate(
@@ -119,8 +119,8 @@ def handle_message(event):
                 columns=[
                     CarouselColumn(
                         thumbnail_image_url=url,
-                        title='第一項',
-                        text='這是第一項的描述',
+                        title='第1項',
+                        text='這是第1項的描述',
                         actions=[
                             URIAction(
                                 label='按我前往 Google',
@@ -130,8 +130,8 @@ def handle_message(event):
                     ),
                     CarouselColumn(
                         thumbnail_image_url=url,
-                        title='第二項',
-                        text='這是第二項的描述',
+                        title='第2項',
+                        text='這是第2項的描述',
                         actions=[
                             URIAction(
                                 label='按我前往 Yahoo',
@@ -139,6 +139,28 @@ def handle_message(event):
                             )
                         ]
                     )
+                    CarouselColumn(
+                        thumbnail_image_url=url,
+                        title='第3項',
+                        text='這是第3項的描述',
+                        actions=[
+                            URIAction(
+                                label='按我前往 Yahoo',
+                                uri='https://www.yahoo.com'
+                            )
+                        ]
+                    )
+                    CarouselColumn(
+                        thumbnail_image_url=url,
+                        title='第4項',
+                        text='這是第4項的描述',
+                        actions=[
+                            URIAction(
+                                label='按我前往 Yahoo',
+                                uri='https://www.yahoo.com'
+                            )
+                        ]
+                    )                                        
                 ]
             )
 
