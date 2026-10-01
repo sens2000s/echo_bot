@@ -138,7 +138,7 @@ def handle_message(event):
                                 uri='https://www.yahoo.com'
                             )
                         ]
-                    )
+                    ),
                     CarouselColumn(
                         thumbnail_image_url=url,
                         title='第3項',
@@ -149,7 +149,7 @@ def handle_message(event):
                                 uri='https://www.yahoo.com'
                             )
                         ]
-                    )
+                    ),
                     CarouselColumn(
                         thumbnail_image_url=url,
                         title='第4項',
