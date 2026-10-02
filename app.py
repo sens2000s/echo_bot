@@ -120,44 +120,44 @@ def handle_message(event):
                     CarouselColumn(
                         thumbnail_image_url=url,
                         title='第1項',
-                        text='這是第1項的描述',
+                        text='即將上線',
                         actions=[
                             URIAction(
-                                label='按我前往 Google',
-                                uri='https://www.google.com'
+                                label='專案管理中',
+                                uri='https://0401mgiril.com/'
                             )
                         ]
                     ),
                     CarouselColumn(
                         thumbnail_image_url=url,
                         title='第2項',
-                        text='這是第2項的描述',
+                        text='即將上線',
                         actions=[
                             URIAction(
-                                label='按我前往 Yahoo',
-                                uri='https://www.yahoo.com'
+                                label='專案管理中',
+                                uri='https://0401mgiril.com/'
                             )
                         ]
                     ),
                     CarouselColumn(
                         thumbnail_image_url=url,
                         title='第3項',
-                        text='這是第3項的描述',
+                        text='即將上線',
                         actions=[
                             URIAction(
-                                label='按我前往 Yahoo',
-                                uri='https://www.yahoo.com'
+                                label='專案管理中',
+                                uri='https://0401mgiril.com/'
                             )
                         ]
                     ),
                     CarouselColumn(
                         thumbnail_image_url=url,
                         title='第4項',
-                        text='這是第4項的描述',
+                        text='即將上線',
                         actions=[
                             URIAction(
-                                label='按我前往 Yahoo',
-                                uri='https://www.yahoo.com'
+                                label='專案管理中',
+                                uri='https://0401mgiril.com/'
                             )
                         ]
                     )                                        
