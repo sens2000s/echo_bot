@@ -101,12 +101,15 @@ def handle_message(event):
         ])
     elif text == '耆老說':
         message = carousel_message('耆老說', [
-            {'image': 'linebot02_store01.jpg', 'title': '山的呼喚與獵人的足跡',
+            {'image': 'linebot02_store01.jpg', 'title': '跨越彩虹橋的試煉',
              'text': '獵人智慧與祖靈之眼', 'label': '觀看導覽影片',
-             'uri': 'https://www.safeflower.com.tw/testyl/static/linebot02_store01.jpg'},
+             'uri': 'https://youtube.com/shorts/5qPE_wlFs7I'},
             {'image': 'linebot02_store02.jpg', 'title': '臉龐上的榮耀密碼',
              'text': '紋面文化與成年榮耀', 'label': '觀看導覽影片',
-             'uri': 'https://www.safeflower.com.tw/testyl/static/linebot02_store02.jpg'},
+             'uri': 'https://youtube.com/shorts/ld6TFOLSqv4'},
+            {'image': 'linebot02_store03.jpg', 'title': '苧麻工藝與賢德織女',
+             'text': '苧麻線上的彩虹', 'label': '觀看導覽影片',
+             'uri': 'https://youtube.com/shorts/jR10geHhweE'},
         ])
     elif text == '紓壓問卷':
         message = image_carousel_message('紓壓問卷', [
