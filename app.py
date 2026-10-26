@@ -1,216 +1,143 @@
-from flask import Flask, request, abort
-from linebot.v3 import (
-    WebhookHandler
-)
-from linebot.v3.exceptions import (
-    InvalidSignatureError
-)
-from linebot.v3.messaging import (
-    Configuration,
-    ApiClient,
-    MessagingApi,
-    ReplyMessageRequest,
-    TemplateMessage,
-    ConfirmTemplate,
-    ButtonsTemplate,
-    CarouselTemplate,
-    CarouselColumn,
-    ImageCarouselTemplate,
-    ImageCarouselColumn,
-    MessageAction,
-    URIAction,
-    PostbackAction,
-    DatetimePickerAction,
-    CameraAction,
-    CameraRollAction,
-    LocationAction
-)
-from linebot.v3.webhooks import (
-    MessageEvent,
-    TextMessageContent,
-)
-
+"""後山蕨起 LINE Bot / Flask webhook (LINE SDK v3)."""
+import logging
 import os
+from urllib.parse import urljoin
+
+from flask import Flask, abort, request
+from linebot.v3 import WebhookHandler
+from linebot.v3.exceptions import InvalidSignatureError
+from linebot.v3.messaging import (
+    ApiClient, CarouselColumn, CarouselTemplate, Configuration,
+    ImageCarouselColumn, ImageCarouselTemplate, MessagingApi,
+    ReplyMessageRequest, TemplateMessage, TextMessage, URIAction,
+)
+from linebot.v3.webhooks import MessageEvent, TextMessageContent
 
 app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
 
-configuration = Configuration(access_token=os.getenv('CHANNEL_ACCESS_TOKEN'))
-line_handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
+CHANNEL_ACCESS_TOKEN = os.getenv('CHANNEL_ACCESS_TOKEN', '').strip()
+CHANNEL_SECRET = os.getenv('CHANNEL_SECRET', '').strip()
+# 建議正式部署設定，例如 https://your-domain.example/（結尾有無 / 均可）
+PUBLIC_BASE_URL = os.getenv('PUBLIC_BASE_URL', '').strip().rstrip('/')
+
+if not CHANNEL_ACCESS_TOKEN or not CHANNEL_SECRET:
+    raise RuntimeError('請先設定 CHANNEL_ACCESS_TOKEN 與 CHANNEL_SECRET 環境變數')
+
+configuration = Configuration(access_token=CHANNEL_ACCESS_TOKEN)
+line_handler = WebhookHandler(CHANNEL_SECRET)
 
 
-@app.route("/callback", methods=['POST'])
+def static_image_url(filename):
+    """建立 LINE 伺服器可從外部存取的 HTTPS 圖片網址。"""
+    base = PUBLIC_BASE_URL or request.url_root.rstrip('/')
+    if base.startswith('http://'):
+        # 反向代理後端可能使用 HTTP，但對外應使用 HTTPS。
+        base = 'https://' + base[len('http://'):]
+    return urljoin(base + '/', 'static/' + filename)
+
+
+def carousel_message(alt_text, items):
+    columns = [
+        CarouselColumn(
+            thumbnail_image_url=static_image_url(item['image']),
+            title=item['title'],
+            text=item['text'],
+            actions=[URIAction(label=item['label'], uri=item['uri'])],
+        )
+        for item in items
+    ]
+    return TemplateMessage(alt_text=alt_text, template=CarouselTemplate(columns=columns))
+
+
+def image_carousel_message(alt_text, items):
+    columns = [
+        ImageCarouselColumn(
+            image_url=static_image_url(item['image']),
+            action=URIAction(label=item['label'], uri=item['uri']),
+        )
+        for item in items
+    ]
+    return TemplateMessage(
+        alt_text=alt_text,
+        template=ImageCarouselTemplate(columns=columns),
+    )
+
+
+@app.route('/', methods=['GET'])
+def health_check():
+    return '後山蕨起 LINE Bot is running', 200
+
+
+@app.route('/callback', methods=['POST'])
 def callback():
-    # get X-Line-Signature header value
-    signature = request.headers['X-Line-Signature']
-
-    # get request body as text
+    signature = request.headers.get('X-Line-Signature')
+    if not signature:
+        abort(400, description='Missing X-Line-Signature')
     body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
-
-    # handle webhook body
     try:
         line_handler.handle(body, signature)
     except InvalidSignatureError:
-        app.logger.info("Invalid signature. Please check your channel access token/channel secret.")
+        app.logger.warning('Invalid LINE signature')
         abort(400)
-
-    return 'OK'
+    return 'OK', 200
 
 
 @line_handler.add(MessageEvent, message=TextMessageContent)
 def handle_message(event):
-    text = event.message.text
+    text = event.message.text.strip()
+
+    if text == '園區數位導覽':
+        message = carousel_message('園區數位導覽', [
+            {'image': 'linebot01_store01.jpg', 'title': '後山蕨起的山蘇田',
+             'text': 'Line Bot 線上語音導覽', 'label': '觀看導覽影片',
+             'uri': 'https://youtu.be/muQXCP4XmAI'},
+            {'image': 'linebot01_store02.jpg', 'title': '弓箭體驗和狩獵介紹',
+             'text': 'Line Bot 線上語音導覽', 'label': '觀看導覽影片',
+             'uri': 'https://youtu.be/C8XFIyb-le0'},
+            {'image': 'linebot01_store03.jpg', 'title': '太魯閣族的祈福儀式',
+             'text': 'Line Bot 線上語音導覽', 'label': '觀看導覽影片',
+             'uri': 'https://youtu.be/jENYBG0eXGU'},
+        ])
+    elif text == '耆老說':
+        message = carousel_message('耆老說', [
+            {'image': 'linebot02_store01.jpg', 'title': '山的呼喚與獵人的足跡',
+             'text': '--獵人智慧與祖靈之眼--', 'label': '觀看導覽影片',
+             'uri': '#'},
+            {'image': 'linebot02_store02.jpg', 'title': '臉龐上的榮耀密碼',
+             'text': '--紋面文化與成年榮耀--', 'label': '觀看導覽影片',
+             'uri': '#'},
+        ])
+    elif text == '紓壓問卷':
+        message = image_carousel_message('紓壓問卷', [
+            {'image': 'pressure_before01.jpg', 'label': '填 寫 問 卷',
+             'uri': 'https://www.safeflower.com.tw/testyl/stress_test01.php'},
+            {'image': 'pressure_after01.jpg', 'label': '填 寫 問 卷',
+             'uri': 'https://www.safeflower.com.tw/testyl/stress_info.php'},
+        ])
+    elif text == '療癒商品':
+        # TODO: 正式上線前更換商品圖片及商品介紹連結。
+        message = image_carousel_message('療癒商品', [
+            {'image': 'linebot04_prod01.jpg', 'label': '專案開發療癒商品介紹',
+             'uri': 'https://www.safeflower.com.tw/testyl/shansu_oil.php'},
+        ])
+    elif text == '山蘇技術影片':
+        # TODO: 正式上線前更換技術影片圖片及影片連結。
+        message = image_carousel_message('山蘇技術影片', [
+            {'image': 'linebot05_mov01.jpg', 'label': '山蘇低溫保鮮技術影片觀賞',
+             'uri': 'https://youtu.be/w_IS4hsrq8s'},
+        ])
+    else:
+        message = TextMessage(
+            text='歡迎使用後山蕨起 LINE Bot！請從選單選擇：園區數位導覽、耆老說、紓壓問卷、療癒商品或山蘇技術影片。'
+        )
+
     with ApiClient(configuration) as api_client:
-        line_bot_api = MessagingApi(api_client)
-        # Confirm Template
-        if text == '原新農業合作社介紹':
-            confirm_template = ConfirmTemplate(
-                text='是否參訪',
-                actions=[
-                    MessageAction(label='是', text='是!'),
-                    MessageAction(label='否', text='否!')
-                ]
-            )
-            template_message = TemplateMessage(
-                alt_text='Confirm alt text',
-                template=confirm_template
-            )
-            line_bot_api.reply_message(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages=[template_message]
-                )
-            )
-        # Buttons Template
-        elif text == '療癒遊程介紹':
-            url = request.url_root + 'static/mlogo.jpg'
-            url = url.replace("http:", "https:")
-            app.logger.info("url=" + url)
-            buttons_template = ButtonsTemplate(
-                thumbnail_image_url=url,
-                title='療癒遊程介紹',
-                text='導向官網說明',
-                actions=[
-                    # URIAction(label='連結', uri='https://0401mgiril.com/about-us/'),
-                    # PostbackAction(label='回傳值', data='ping', displayText='傳了'),
-                    # MessageAction(label='傳"哈囉"', text='哈囉'),
-                    # DatetimePickerAction(label="選擇時間", data="時間", mode="datetime"),
-                    CameraAction(label='拍照'),
-                    CameraRollAction(label='選擇相片'),
-                    LocationAction(label='選擇位置')
-                ]
-            )
-            template_message = TemplateMessage(
-                alt_text="This is a buttons template",
-                template=buttons_template
-            )
-            line_bot_api.reply_message(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages=[template_message]
-                )
-            )
-        # Carousel Template
-        elif text == '療癒商品':
-            url = request.url_root + 'static/mlogo.jpg'
-            url = url.replace("http:", "https:")
-            app.logger.info("url=" + url)
-            carousel_template = CarouselTemplate(
-                columns=[
-                    CarouselColumn(
-                        thumbnail_image_url=url,
-                        title='第1項',
-                        text='即將上線',
-                        actions=[
-                            URIAction(
-                                label='專案管理中',
-                                uri='https://0401mgiril.com/'
-                            )
-                        ]
-                    ),
-                    CarouselColumn(
-                        thumbnail_image_url=url,
-                        title='第2項',
-                        text='即將上線',
-                        actions=[
-                            URIAction(
-                                label='專案管理中',
-                                uri='https://0401mgiril.com/'
-                            )
-                        ]
-                    ),
-                    CarouselColumn(
-                        thumbnail_image_url=url,
-                        title='第3項',
-                        text='即將上線',
-                        actions=[
-                            URIAction(
-                                label='專案管理中',
-                                uri='https://0401mgiril.com/'
-                            )
-                        ]
-                    ),
-                    CarouselColumn(
-                        thumbnail_image_url=url,
-                        title='第4項',
-                        text='即將上線',
-                        actions=[
-                            URIAction(
-                                label='專案管理中',
-                                uri='https://0401mgiril.com/'
-                            )
-                        ]
-                    )                                        
-                ]
-            )
+        MessagingApi(api_client).reply_message(
+            ReplyMessageRequest(reply_token=event.reply_token, messages=[message])
+        )
 
-            carousel_message = TemplateMessage(
-                alt_text='這是 Carousel Template',
-                template=carousel_template
-            )
 
-            line_bot_api.reply_message(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages =[carousel_message]
-                )
-            )
-        # ImageCarousel Template
-        elif text == '療癒問卷':
-            url = request.url_root + 'static/'
-            url = url.replace("http:", "https:")
-            app.logger.info("url=" + url)
-            image_carousel_template = ImageCarouselTemplate(
-                columns=[
-                    ImageCarouselColumn(
-                        image_url=url+'pressure_before01.jpg',
-                        action=URIAction(
-                            label='填 寫 問 卷',
-                            uri='https://www.safeflower.com.tw/testyl/stress_test01.php'
-                        )
-                    ),
-                    ImageCarouselColumn(
-                        image_url=url+'pressure_after01.jpg',
-                        action=URIAction(
-                            label='填 寫 問 卷',
-                            uri='https://www.safeflower.com.tw/testyl/stress_info.php'
-                        )
-                    ),
-                    
-                ]
-            )
-
-            image_carousel_message = TemplateMessage(
-                alt_text='其他商品',
-                template=image_carousel_template
-            )
-
-            line_bot_api.reply_message(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages=[image_carousel_message]
-                )
-            )
-
-if __name__ == "__main__":
-    app.run()
+if __name__ == '__main__':
+    port = int(os.getenv('PORT', '5000'))
+    app.run(host='0.0.0.0', port=port, debug=False)
