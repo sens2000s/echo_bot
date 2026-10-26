@@ -91,7 +91,7 @@ def handle_message(event):
         message = carousel_message('園區數位導覽', [
             {'image': 'linebot01_store01.jpg', 'title': '後山蕨起的山蘇田',
              'text': 'Line Bot 線上語音導覽', 'label': '觀看導覽影片',
-             'uri': 'https://youtu.be/muQXCP4XmAI'},
+             'uri': 'https://youtu.be/dmyArHwi_sY'},
             {'image': 'linebot01_store02.jpg', 'title': '弓箭體驗和狩獵介紹',
              'text': 'Line Bot 線上語音導覽', 'label': '觀看導覽影片',
              'uri': 'https://youtu.be/C8XFIyb-le0'},
